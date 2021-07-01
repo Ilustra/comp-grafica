@@ -1,0 +1,29 @@
+
+<div  style="justify-content: center; align-items: center; padding: 5px; width: 530px;">
+    <div style="display: flex; flex-direction: row;">
+    <mat-card      (mousemove)="onMouseMove($event)" style="width: 501; height: 501;margin: 0px; padding: 0px;">
+        <canvas (click)="onClick($event)"  #canvas id="tela-desenho" width="500" height="500">
+        </canvas>
+    </mat-card>
+    <mat-card style="margin-left: 10px;">
+        <ul>
+            <li> <button (click)='onInsertPoligono()' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
+                <mat-icon>edit</mat-icon>
+              </button></li>   
+                    <li> <button (click)='clearPainel()' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
+                <mat-icon>delete_sweep</mat-icon>
+              </button></li>                   
+               <li> <button (click)='onCircle(250, 250, 150)' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
+                <mat-icon>radio_button_unchecked</mat-icon>
+              </button></li>
+        </ul>
+    </mat-card>
+   </div>
+        <div style="display:flex; flex-direction: row; justify-content: space-between; color:#c7c7c7; background-color: #fafafa; padding: 10">
+            <span >x: {{positionViewport.x}}, y: {{positionViewport.y}}</span>
+            <span >x: {{positionViewport.newX}}, y: {{positionViewport.newY}}</span>
+        </div>
+
+</div>
+
+
