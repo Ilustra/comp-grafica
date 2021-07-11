@@ -29,21 +29,12 @@ export class CCanvaComponent implements OnInit {
   public positionViewport:any = {x: 0, y:0, newX: 0, newY:0};
 
   constructor(private displayService: DisplayfileService) {       
-    this.changeText = false;  
+
   }
 
   async ngOnInit() {
-    this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.desenha()
-    
-  }
-
-  desenha(){
-    this.ctx.moveTo(250, 0);
-    this.ctx.lineTo(250, 500);
-    this.ctx.moveTo(0,250);
-    this.ctx.lineTo(500, 250);
-    this.ctx.stroke();
+    this.displayService.context = this.canvas.nativeElement.getContext('2d');
+    this.displayService.onDesenha()
   }
 
   private insertPoligono: boolean = false;
@@ -51,9 +42,9 @@ export class CCanvaComponent implements OnInit {
   onInsertPoligono(){
     if(!this.insertPoligono){
       this.insertPoligono = !this.insertPoligono;
-      this.displayFile.poligonos.push(new Poligono());
+      this.displayService.display.poligonos.unshift(new Poligono());
     }else {
-      this.displayFile.poligonos.push(new Poligono());
+      this.displayService.display.poligonos.unshift(new Poligono());
     }
   }
   onViewPortToMundo(x: number, y:number, mundo: Janela, viewPort:Janela){
@@ -66,21 +57,19 @@ export class CCanvaComponent implements OnInit {
     this.positionViewport = this.onViewPortToMundo(e.x, e.y, this.mundo, this.viewPort);
   }
   clearPainel(){
-    this.ctx.clearRect(0,0, 500, 500)
-    this.ctx.beginPath();
-    // this.ctx.restore();
-    this.displayFile.clear();;
-    this.desenha();
+    this.displayService.onClear();
+    this.displayService.onDesenha()
   }
   onClick(e: any){
     if(this.insertPoligono){
-      const t = this.displayFile.poligonos.length-1;
-      this.displayFile.poligonos[t].pontos.push(new Ponto(e.x, e.y))
-      this.ctx.clearRect(0,0, 500, 500)
-      this.ctx = this.displayFile.poligonos[t].desenha(this.ctx)
-      
+      this.displayService.display.poligonos[0].pontos.unshift(new Ponto(e.x, e.y))
+      this.displayService.onDesenhaPoligono(0)
+    //  this.displayService.onPonto(e.x, e.y);
+      //const t = this.displayFile.poligonos.length-1;
+     // this.displayFile.poligonos[t].pontos.push(new Ponto(e.x, e.y))
+     // this.ctx.clearRect(0,0, 500, 500)
+    //  this.ctx = this.displayFile.poligonos[t].desenha(this.ctx)
     }
-
   }
   plot(x:number, y:number){
     //this.ctx.moveTo(x,y); 
@@ -122,31 +111,16 @@ export class CCanvaComponent implements OnInit {
     }
     let erro = 2*deltaY - deltax;
   }
-
-
-  DesenhaPontoCircunferencia(x: number, y: number): Poligono{
-    const pol = new Poligono();
-
-    pol.pontos.push(new Ponto(x,y));
-    pol.pontos.push(new Ponto(-x,y));
-
-    pol.pontos.push(new Ponto(y,x));
-    pol.pontos.push(new Ponto(y, -x));
-
-    pol.pontos.push(new Ponto(x, -y));
-    pol.pontos.push(new Ponto(-x, -y));
-
-    pol.pontos.push(new Ponto(-y, -x));
-    pol.pontos.push(new Ponto(-y, x));
-    return pol;
+  onCirc(xc: number, yc: number, r: number){
+    this.displayService.onCircle(xc, yc, r);
 
   }
-  
   onCircle(xc: number, yc: number, r: number){
       let x = 0;
       let y = r;
-      let pol: Poligono[]=[];
-      pol.push(this.DesenhaPontoCircunferencia(xc+x, yc+y));
+      let poli: Poligono = new Poligono();
+      this.displayService.display.poligonos.push(this.displayService.onCreatePontCircun(poli, xc, yc, x, y))
+
       let p = r-1;
       while(x < y){
         if(p<0)
@@ -159,9 +133,11 @@ export class CCanvaComponent implements OnInit {
           p+=2*x+1;
         else
           p+=2*(x-y)+1;
-          pol.push(this.DesenhaPontoCircunferencia(xc+x, yc+y));
+        this.displayService.onCreatePontCircun(poli, xc, yc, x, y);
       }
-    this.displayFile.poligonos = pol;
+      this.displayService.display.poligonos.forEach(value=>{
+         value.desenha(this.ctx)
+      })
 
   }
   
