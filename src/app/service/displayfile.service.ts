@@ -184,6 +184,6 @@ export class DisplayfileService {
   }
   cliping(janela: Janela){
     this.display.cliping(janela);
-    this.onDesenhaPoligono()
+    this.onDesenha()
   }
 }                                                                                         

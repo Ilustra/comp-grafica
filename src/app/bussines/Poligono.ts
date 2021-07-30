@@ -10,11 +10,13 @@ export class Poligono{
     public id: Guid ;
     public tipo: string='';
     public pontos: Ponto[];
-    public visible: boolean
+    public visible: boolean;
+    public selected: boolean;
     constructor(){
         this.id = onGuid();
         this.pontos=[];
         this.visible = true;
+        this.selected = false;
     }
     onVisiblePoligono(){
         this.visible = !this.visible

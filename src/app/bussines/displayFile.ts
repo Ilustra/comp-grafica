@@ -27,8 +27,15 @@ export class DisplayFile{
     }
     cliping(areaCliping: Janela){
         this.poligonos.forEach(element=>{
-            let t = element.cliping(areaCliping);
-             this.poligonos.push(t)
+            if(element.tipo != 'eixoX' && element.tipo!='eixoY'){
+                let t = element.cliping(areaCliping);
+                if(t.pontos.length>0){
+                    element.visible = false;
+                    this.poligonos.push(t)
+                }
+      
+            }
+
         })
     }
     onVisiblePoligono(id: Guid){

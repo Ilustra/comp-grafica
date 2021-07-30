@@ -38,6 +38,7 @@ export class CCanvaComponent implements OnInit {
 
   loginForm: FormGroup
   transladX: number
+  poligonoId: Guid
   transladY: number
   angulo: number
   async ngOnInit() {
@@ -138,12 +139,12 @@ export class CCanvaComponent implements OnInit {
         value.onTranslado(dx, dy);
       }
     })
-    this.displayService.onDesenhaPoligono();
+    this.displayService.onDesenha();
   }
 
   onRotation(id: Guid, angulo: number) {
     this.displayService.onRatationPoligono(id, angulo);
-    this.displayService.onDesenhaPoligono();
+    this.displayService.onDesenha();
   }
 
   onClickTranslad(id: Guid) {
@@ -156,6 +157,7 @@ export class CCanvaComponent implements OnInit {
   onMoviment(top: number, bottom: number, left: number, rigth: number) {
     console.log(top, bottom, left, rigth)
     this.displayService.onMoviment(top, bottom, left, rigth)
+    this.displayService.onDesenha();
   }
   onCliping(areaXmin: number, areaYmin: number, areaXmax: number, areaYmax: number) {
     const areaclipi = new Janela(areaXmin, areaYmin, areaXmax, areaYmax);
@@ -163,6 +165,6 @@ export class CCanvaComponent implements OnInit {
   }
   onVisiblePoligono(id: Guid) {
     this.displayService.display.onVisiblePoligono(id);
-    this.displayService.onDesenhaPoligono()
+    this.displayService.onDesenha()
   }
 }
