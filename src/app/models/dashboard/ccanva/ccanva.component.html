@@ -1,33 +1,112 @@
-
-<div  style="justify-content: center; align-items: center; padding: 5px; width: 530px;">
-    <div style="display: flex; flex-direction: row;">
-    <mat-card      (mousemove)="onMouseMove($event)" style="width: 501; height: 501;margin: 0px; padding: 0px;">
-        <canvas (click)="onClick($event)"  #canvas id="tela-desenho" width="500" height="500">
-        </canvas>
-    </mat-card>
-    <mat-card style="margin-left: 10px;">
-        <ul>
-            <li> <button (click)='onInsertPoligono()' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
-                <mat-icon>edit</mat-icon>
-              </button>
-            </li>   
-            <li> <button (click)='clearPainel()' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
-                <mat-icon>delete_sweep</mat-icon>
-              </button>
-            </li>                   
-            <li> <button (click)='onCirc(250, 250, 150)' mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
-                <mat-icon>radio_button_unchecked</mat-icon>
-              </button>
-            </li>
-   
-        </ul>
-    </mat-card>
-   </div>
-        <div style="display:flex; flex-direction: row; justify-content: space-between; color:#c7c7c7; background-color: #fafafa; padding: 10">
-            <span >x: {{positionViewport.x}}, y: {{positionViewport.y}}</span>
-            <span >x: {{positionViewport.newX}}, y: {{positionViewport.newY}}</span>
+<div
+  style="justify-content: center; align-items: center;  justify-content: center; align-items: center; background-color: #c7c7c7;">
+  <div style="display: flex; flex-direction: row; background-color: #c7c7c7;  justify-content: space-between;">
+    <mat-card (mousemove)="onMouseMove($event)" style="width: 501px; height: 501px;margin: 0px; padding: 0px;">
+      <canvas (click)="onClick($event)" #canvas id='canvas' width="500" height="500"
+        style="border:1px solid #000000;"></canvas>
+      <div
+        style="display:flex; flex-direction: row; justify-content: space-between; color:#c7c7c7; background-color: #fafafa; padding: 10">
+        <span>x: {{displayService.positionViewport.x}}, y: {{displayService.positionViewport.y}}</span>
+        <span>x: {{displayService.positionViewport.newX}}, y: {{displayService.positionViewport.newY}}</span>
+      </div>
+      <div style="justify-content: center; display: block; align-items: center; ">
+        <button (click)='onMoviment(50,50,50,-50)' mat-mini-fab color="accent"
+          aria-label="Example icon button with a plus one icon">
+          <mat-icon>arrow_drop_up</mat-icon>
+        </button>
+        <div style="display: flex;">
+          <button (click)='onMoviment(-50,-50,50,50)' mat-mini-fab color="accent"
+            aria-label="Example icon button with a plus one icon">
+            <mat-icon>arrow_left</mat-icon>
+          </button>
+          <button (click)='onMoviment(50,50,50,50)' mat-mini-fab color="accent"
+            aria-label="Example icon button with a plus one icon">
+            <mat-icon>arrow_right</mat-icon>
+          </button>
         </div>
+        <button (click)='onMoviment(-50,-50,50,50)' mat-mini-fab color="accent"
+          aria-label="Example icon button with a plus one icon">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+      </div>
+    </mat-card>
 
-</div>
+    <div style="display: flex;">
+      <mat-card style="margin-left: 10px; height: 250px;">
+        <ul>
+          <li> <button (click)='onInsertPoligono()' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </li>
+          <li> <button (click)='clearPainel()' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>delete_sweep</mat-icon>
+            </button>
+          </li>
+          <li> <button (click)='onCirc(0, 0, 150)' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>radio_button_unchecked</mat-icon>
+            </button>
+          </li>
+          <li> <button (click)='onCliping(-100, -100, 100, 100)' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+          </li>
+          <li> <button (click)='onZoomIn(100, 100, -100, -100)' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>zoom_in</mat-icon>
+            </button>
+          </li>
+          <li> <button (click)='onZoomIn(-100, -100, 100, 100)' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>zoom_out</mat-icon>
+            </button>
+          </li>
+        </ul>
+      </mat-card>
+      <div style="width: 320px; background-color: #fafafa; overflow:scroll; max-height: 100vh; padding: 10px;">
+        <p>Poligonos</p>
+        <div *ngFor='let index of displayService.display.poligonos'>
+          {{index.tipo}}
+          <mat-card style="padding: 5px; margin-bottom: 5px;">
 
+            <div style="flex-direction: row; display: flex; align-items: center;">
 
+              <mat-form-field appearance="legacy" style="width: 40px; margin: 0px; ">
+                <input matInput placeholder="X" type="number" matInput [(ngModel)]="transladX"
+                  [ngModelOptions]="{standalone: true}">
+              </mat-form-field>
+
+              <mat-form-field appearance="legacy" style="width: 40px; margin: 0px">
+                <input matInput placeholder="Y" type="number" matInput [(ngModel)]="transladY"
+                  [ngModelOptions]="{standalone: true}">
+              </mat-form-field>
+
+              <button style="height: 50px;" mat-button color="primary"
+                (click)='onTransLad(index.id, transladX, transladY)'> Transladar</button>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <mat-form-field appearance="legacy" style="width: 50px;">
+                <input type="number" matInput placeholder="0º" [(ngModel)]="angulo"
+                  [ngModelOptions]="{standalone: true}">
+              </mat-form-field>
+              <button mat-button color="primary" (click)='onRotation(index.id, angulo)' style="height: 10px;">
+                rotacionar</button>
+            </div>
+
+            <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
+              aria-label="Example icon button with a heart icon">
+              <mat-icon color="primary">visibility</mat-icon>
+            </button>
+            <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
+              aria-label="Example icon button with a heart icon">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>                  

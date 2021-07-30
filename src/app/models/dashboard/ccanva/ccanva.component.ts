@@ -1,10 +1,13 @@
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Guid } from 'guid-typescript';
 import { DisplayFile } from 'src/app/bussines/displayFile';
 import { Janela } from 'src/app/bussines/Janela';
 import { Poligono } from 'src/app/bussines/Poligono';
 import { Ponto } from 'src/app/bussines/Ponto';
 import { DisplayfileService } from 'src/app/service/displayfile.service';
-
 @Component({
   selector: 'app-ccanva',
   templateUrl: './ccanva.component.html',
@@ -13,132 +16,153 @@ import { DisplayfileService } from 'src/app/service/displayfile.service';
 
 
 export class CCanvaComponent implements OnInit {
+  panelOpenState = false;
 
-
-  mundo: Janela = new Janela(-250,-250, 250, 250);
-  viewPort:Janela = new Janela(0, 0, 500, 500);
-  poligono:  Poligono = new Poligono();
+  poligono: Poligono = new Poligono();
   pontoAux: Ponto;
   displayFile: DisplayFile = new DisplayFile;
 
   @ViewChild('canvas', { static: true })
+  //@ViewChild('canvapol')
+
 
   public canvas!: ElementRef<HTMLCanvasElement>;
-  public ctx: any;
-  changeText: boolean;
-  public positionViewport:any = {x: 0, y:0, newX: 0, newY:0};
 
-  constructor(private displayService: DisplayfileService) {       
+  public ctx: any;
+  private transladClick: Guid;
+  changeText: boolean;
+
+  constructor(public displayService: DisplayfileService, private formBuilder: FormBuilder) {
 
   }
 
+  loginForm: FormGroup
+  transladX: number
+  transladY: number
+  angulo: number
   async ngOnInit() {
+    this.displayService.onMundo(-250, -250, 250, 250);
+    this.displayService.onViewPort(0, 0, 500, 500);
+
+    this.displayService.onEixoCartesiano()
+
     this.displayService.context = this.canvas.nativeElement.getContext('2d');
-    this.displayService.onDesenha()
+    this.loginForm = this.formBuilder.group({
+      id: [null],
+      transladX: [null],
+      transladY: [null],
+      angulo: [null]
+    });
+
+    this.displayService.onDesenhaPoligono()
   }
 
   private insertPoligono: boolean = false;
 
-  onInsertPoligono(){
-    if(!this.insertPoligono){
+  onInsertPoligono() {
+    if (!this.insertPoligono) {
       this.insertPoligono = !this.insertPoligono;
-      this.displayService.display.poligonos.unshift(new Poligono());
-    }else {
-      this.displayService.display.poligonos.unshift(new Poligono());
+      this.displayService.onNewPol();
+    } else {
+      this.displayService.onNewPol();
+      // this.displayService.display.poligonos.unshift(new Poligono());
     }
-  }
-  onViewPortToMundo(x: number, y:number, mundo: Janela, viewPort:Janela){
-    const newX = ((x - viewPort.xMin) / (viewPort.xMax - viewPort.xMin)) * (mundo.xMax - mundo.xMin)+mundo.xMin;
-    const newY =  (1-((y-viewPort.yMin)/(viewPort.yMax - viewPort.yMin)))*(mundo.yMax - mundo.yMin)+mundo.yMin
-    return {'newX': newX, 'newY': newY, 'x': x, 'y': y}
   }
 
-  onMouseMove(e: any){
-    this.positionViewport = this.onViewPortToMundo(e.x, e.y, this.mundo, this.viewPort);
+
+  onMouseMove(e: any) {
+    this.displayService.onViewPortToMundo(e.x, e.y);
   }
-  clearPainel(){
+  clearPainel() {
     this.displayService.onClear();
-    this.displayService.onDesenha()
+    this.displayService.onMundo(-250, -250, 250, 250);
+    this.displayService.onViewPort(0, 0, 500, 500);
+    this.displayService.onEixoCartesiano()
+    this.displayService.onDesenhaPoligono()
   }
-  onClick(e: any){
-    if(this.insertPoligono){
-      this.displayService.display.poligonos[0].pontos.unshift(new Ponto(e.x, e.y))
-      this.displayService.onDesenhaPoligono(0)
-    //  this.displayService.onPonto(e.x, e.y);
-      //const t = this.displayFile.poligonos.length-1;
-     // this.displayFile.poligonos[t].pontos.push(new Ponto(e.x, e.y))
-     // this.ctx.clearRect(0,0, 500, 500)
-    //  this.ctx = this.displayFile.poligonos[t].desenha(this.ctx)
+
+  onClick(e: any) {
+    if (this.insertPoligono) {
+      this.displayService.onPushPontos(this.displayService.poligono.id, this.displayService.positionViewport.newX, this.displayService.positionViewport.newY);
+      this.displayService.onDesenha()
     }
   }
-  plot(x:number, y:number){
-    //this.ctx.moveTo(x,y); 
-    this.ctx.lineTo(x,y); 
+  plot(x: number, y: number) {
+
+    this.ctx.lineTo(x, y);
     this.ctx.stroke();
   }
-  desenhaLinhaOctante(x1: number, y1: number, x2: number, y2: number){
+  desenhaLinhaOctante(x1: number, y1: number, x2: number, y2: number) {
     let x = x1;
     let y = y1;
-    let deltaX = x2-x1;
-    let deltaY = y2-y1;
-    let e = 2*deltaY - deltaX;
-    for(let i = 1; i<= deltaX; i++){
+    let deltaX = x2 - x1;
+    let deltaY = y2 - y1;
+    let e = 2 * deltaY - deltaX;
+    for (let i = 1; i <= deltaX; i++) {
       this.plot(x, y);
-      if(e>0){
+      if (e > 0) {
         y++;
-        e-=2*deltaX
+        e -= 2 * deltaX
       } x++;
-      e+=2*deltaY;
+      e += 2 * deltaY;
     }
   }
-  desenhaLinhaInteiro(x1: number, y1: number, x2: number, y2: number){
-    let deltax = Math.abs((x2-x1))
-    let deltaY = Math.abs((y2-y1));
-    let signalX = Math.sign((x2-x1));
-    let signalY = Math.sign((y2-y1));
+  desenhaLinhaInteiro(x1: number, y1: number, x2: number, y2: number) {
+    let deltax = Math.abs((x2 - x1))
+    let deltaY = Math.abs((y2 - y1));
+    let signalX = Math.sign((x2 - x1));
+    let signalY = Math.sign((y2 - y1));
     let x = x1;
     let y = y1;
-    if(signalX<0)
-      x-=1;
-      if(signalY<0)
-      y-=1;
+    if (signalX < 0)
+      x -= 1;
+    if (signalY < 0)
+      y -= 1;
     let interchange = false;
-    if(deltaY >deltax){
+    if (deltaY > deltax) {
       let tmp = deltax;
       deltax = deltaY;
       deltaY = tmp
       interchange = true;
     }
-    let erro = 2*deltaY - deltax;
+    let erro = 2 * deltaY - deltax;
   }
-  onCirc(xc: number, yc: number, r: number){
+  onCirc(xc: number, yc: number, r: number) {
     this.displayService.onCircle(xc, yc, r);
-
+    this.displayService.onDesenha()
   }
-  onCircle(xc: number, yc: number, r: number){
-      let x = 0;
-      let y = r;
-      let poli: Poligono = new Poligono();
-      this.displayService.display.poligonos.push(this.displayService.onCreatePontCircun(poli, xc, yc, x, y))
 
-      let p = r-1;
-      while(x < y){
-        if(p<0)
-          x++;
-        else {
-          x++;
-          y--;
-        }
-        if(p<0)
-          p+=2*x+1;
-        else
-          p+=2*(x-y)+1;
-        this.displayService.onCreatePontCircun(poli, xc, yc, x, y);
+  onTransLad(id: Guid, dx: number, dy: number) {
+    this.displayService.display.poligonos.forEach((value, index) => {
+      if (value.id == id) {
+        value.onTranslado(dx, dy);
       }
-      this.displayService.display.poligonos.forEach(value=>{
-         value.desenha(this.ctx)
-      })
-
+    })
+    this.displayService.onDesenhaPoligono();
   }
-  
+
+  onRotation(id: Guid, angulo: number) {
+    this.displayService.onRatationPoligono(id, angulo);
+    this.displayService.onDesenhaPoligono();
+  }
+
+  onClickTranslad(id: Guid) {
+    this.transladClick = id;
+    this.insertPoligono = false;
+  }
+  onZoomIn(xmin: number, ymin: number, xmax: number, ymax: number) {
+    this.displayService.onZoomPlus(xmin, xmax, ymin, ymax);
+  }
+  onMoviment(top: number, bottom: number, left: number, rigth: number) {
+    console.log(top, bottom, left, rigth)
+    this.displayService.onMoviment(top, bottom, left, rigth)
+  }
+  onCliping(areaXmin: number, areaYmin: number, areaXmax: number, areaYmax: number) {
+    const areaclipi = new Janela(areaXmin, areaYmin, areaXmax, areaYmax);
+    this.displayService.cliping(areaclipi)
+  }
+  onVisiblePoligono(id: Guid) {
+    this.displayService.display.onVisiblePoligono(id);
+    this.displayService.onDesenhaPoligono()
+  }
 }

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CCanvaComponent } from './ccanva.component';
+import { ListPolComponent } from './list-pol.component';
 
-describe('CCanvaComponent', () => {
-  let component: CCanvaComponent;
-  let fixture: ComponentFixture<CCanvaComponent>;
+describe('ListPolComponent', () => {
+  let component: ListPolComponent;
+  let fixture: ComponentFixture<ListPolComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CCanvaComponent ]
+      declarations: [ ListPolComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CCanvaComponent);
+    fixture = TestBed.createComponent(ListPolComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
