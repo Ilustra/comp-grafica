@@ -47,8 +47,7 @@ export class DisplayFile{
     onRotateHomogenea(id:Guid, grau:number){
         this.poligonos.forEach(element=>{
             if(element.id == id){
-                let newPOL = element.onRotateHomogenea(grau);
-                console.log(newPOL)
+               element.onRotateHomogenea(grau);
             }
         })
     }

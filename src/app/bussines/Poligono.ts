@@ -49,12 +49,12 @@ export class Poligono {
         })
     }
     onRotateHomogenea(grau: number) {
-        let auxPonto = this.pontos
+        let ponto_rotacionado = this.pontos
         let radiano = grau * Math.PI / 180
 
         let m_rotation = [[Math.cos(radiano), Math.sin(radiano), 0],    [-Math.sin(radiano), Math.cos(radiano), 0 ],    [0, 0, 1]] 
         let pCentro = this.centro(this.pontos);
-        console.log(pCentro)
+
         let dx = pCentro.x;
         let dy = pCentro.y;
 
@@ -63,14 +63,11 @@ export class Poligono {
 
         let M_xy= [[0,0,1]];
 	    let M_auxiliar=[[0,0,1]];
-        //console.log(auxPonto)
-        auxPonto = this.onMatriz133(M_auxiliar,M_xy,matriz_TRN_negativa, auxPonto);
-       // console.log('primeiro retorno', auxPonto)
-        auxPonto = this.onMatriz133(M_auxiliar,M_xy,m_rotation, auxPonto);
-       // console.log('segundo retorno', auxPonto)
-        auxPonto = this.onMatriz133(M_auxiliar,M_xy,matrizTrans, auxPonto);
-        this.pontos = auxPonto
-        return auxPonto
+
+        ponto_rotacionado = this.onMatriz133(M_auxiliar,M_xy,matriz_TRN_negativa, ponto_rotacionado);
+        ponto_rotacionado = this.onMatriz133(M_auxiliar,M_xy,m_rotation, ponto_rotacionado);
+        ponto_rotacionado = this.onMatriz133(M_auxiliar,M_xy,matrizTrans, ponto_rotacionado);
+        this.pontos = ponto_rotacionado
     }
     onMatriz133(M_auxiliar: any, matriz1: any[1][3],  matriz2: any, pontos: Ponto[]){
 

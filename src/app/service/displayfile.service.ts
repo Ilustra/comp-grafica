@@ -122,7 +122,7 @@ export class DisplayfileService {
     })
   }
   onRotationHomogenea(id: Guid, grau: number){
-    
+
     this.display.onRotateHomogenea(id, grau);
   }
   reloadEixo(){
@@ -146,19 +146,25 @@ export class DisplayfileService {
     this.onDesenha()
   }                                                                                           
   onMoviment(top: number, bottom: number, left: number, rigth: number){
-    console.log(this.mundo)
 
-    this.mundo.yMax +=top
-    this.mundo.xMax += rigth;
+    if(top > 0){
+      this.mundo.yMin += top;
+      this.mundo.yMax += top;
+    }
+    else if(left > 0){
+      this.mundo.xMin += left;
+      this.mundo.xMax += left;
+    }   
+     else if(bottom > 0){
+      this.mundo.yMax -= bottom;
+      this.mundo.yMin -= bottom;
+    }else if(rigth >0){
+      this.mundo.xMin -= rigth;
+      this.mundo.xMax -= rigth;
+    }
 
-    this.mundo.yMin +=bottom
-    this.mundo.xMin += left;
-
-
-
-    console.log(this.mundo)
     this.reloadEixo()
-    this.onDesenha()
+
 
   }
 

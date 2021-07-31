@@ -162,7 +162,6 @@ export class CCanvaComponent implements OnInit {
     this.displayService.onZoomPlus(xmin, xmax, ymin, ymax);
   }
   onMoviment(top: number, bottom: number, left: number, rigth: number) {
-    console.log(top, bottom, left, rigth)
     this.displayService.onMoviment(top, bottom, left, rigth)
     this.displayService.onDesenha();
   }
