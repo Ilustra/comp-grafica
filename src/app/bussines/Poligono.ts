@@ -4,114 +4,173 @@ import { Janela } from "./Janela";
 import { onGuid } from "./onGuid";
 import { Ponto } from "./Ponto";
 
-export class Poligono{
+export class Poligono {
 
 
-    public id: Guid ;
-    public tipo: string='';
+    public id: Guid;
+    public tipo: string = '';
     public pontos: Ponto[];
     public visible: boolean;
     public selected: boolean;
-    constructor(){
+    constructor() {
         this.id = onGuid();
-        this.pontos=[];
+        this.pontos = [];
         this.visible = true;
         this.selected = false;
     }
-    onVisiblePoligono(){
+    onVisiblePoligono() {
         this.visible = !this.visible
     }
-    desenha(ctx: any, mundo: Janela, viewPort:Janela): any{
+    desenha(ctx: any, mundo: Janela, viewPort: Janela): any {
 
-        if(this.visible){
-            
-            for(let i=0; i < this.pontos.length ; i++){
-               
-                if(i==0){
+        if (this.visible) {
+
+            for (let i = 0; i < this.pontos.length; i++) {
+
+                if (i == 0) {
                     ctx.moveTo(this.pontos[i].xWvp(mundo, viewPort), this.pontos[i].yWvp(mundo, viewPort));
-                }else{
+                } else {
                     ctx.lineTo(this.pontos[i].xWvp(mundo, viewPort), this.pontos[i].yWvp(mundo, viewPort));
                 }
             }
             return ctx;
         }
     }
-    
-    onTranslado(descolamentoX: number, descolamentoY:number){
-        this.pontos.forEach(value=>{
+
+    onTranslado(descolamentoX: number, descolamentoY: number) {
+        this.pontos.forEach(value => {
             value.onTranslad(descolamentoX, descolamentoY);
         })
     }
 
-    onRotation(angulo:number){
-        this.pontos.forEach(value=>{
+    onRotation(angulo: number) {
+        this.pontos.forEach(value => {
             value.onRotation(angulo);
         })
     }
+    onRotateHomogenea(grau: number) {
+        let auxPonto = this.pontos
+        let radiano = grau * Math.PI / 180
 
-    find_intersection(outcode: string, p1: Ponto, p2: Ponto, janela: Janela)
-    {
+        let m_rotation = [[Math.cos(radiano), Math.sin(radiano), 0],    [-Math.sin(radiano), Math.cos(radiano), 0 ],    [0, 0, 1]] 
+        let pCentro = this.centro(this.pontos);
+        console.log(pCentro)
+        let dx = pCentro.x;
+        let dy = pCentro.y;
 
-        let x1 = p1.x;
-        let x2 = p2.x;
-        let y1 = p1.y;
-        let y2 = p2.y;
+        let  matrizTrans=[[1,0,0], [ 0,1,0],   [ dx,dy,1]];
+        let matriz_TRN_negativa=[[1,0,0],  [ 0,1,0],   [-dx,-dy,1]]
 
-       let intersections_list = []
-    
-        let m = (y2-y1)/(x2-x1);
-        let pEsquerda = new Ponto(janela.xMin, m*(janela.xMin-x1)+y1);
-        let pDireita = new Ponto(janela.xMax, m*(janela.xMax-x1)+y1);
-        let pTopo = new Ponto(x1+(1/m)*(janela.yMax-y1),janela.yMax);
-        let pFundo = new Ponto(x1+(1/m)*(janela.yMin-y1), janela.yMin);
-        
-        if(pEsquerda.y >= janela.yMin && pEsquerda.y <= janela.yMax)
-            intersections_list.push(pEsquerda);
-        if(pDireita.y >= janela.yMin && pDireita.y <= janela.yMax)
-            intersections_list.push(pDireita)
-        if(pTopo.x > janela.xMin && pTopo.x <= janela.xMax)
-            intersections_list.push(pTopo);
-        if(pFundo.x > janela.xMin && pFundo.x <= janela.xMax)
-            intersections_list.push(pFundo);
-        return intersections_list
+        let M_xy= [[0,0,1]];
+	    let M_auxiliar=[[0,0,1]];
+        //console.log(auxPonto)
+        auxPonto = this.onMatriz133(M_auxiliar,M_xy,matriz_TRN_negativa, auxPonto);
+       // console.log('primeiro retorno', auxPonto)
+        auxPonto = this.onMatriz133(M_auxiliar,M_xy,m_rotation, auxPonto);
+       // console.log('segundo retorno', auxPonto)
+        auxPonto = this.onMatriz133(M_auxiliar,M_xy,matrizTrans, auxPonto);
+        this.pontos = auxPonto
+        return auxPonto
     }
-    cliping(areaCliping: Janela): Poligono{
-        let pol = new Poligono()
-        pol.tipo = 'cliping';
-        for(let i =0; i < this.pontos.length-1; i++){
-            //New variables to hold end points. No relation 
-				//to global 'start' and 'end'
-				let start_ = this.pontos[i];
-			    let	end_ = this.pontos[i+1];    
+    onMatriz133(M_auxiliar: any, matriz1: any[1][3],  matriz2: any, pontos: Ponto[]){
 
-                let o1 = start_.cohen(areaCliping);
-				let o2 = end_.cohen(areaCliping);
-                console.log('o1 o2 and', o1, o2, (parseInt(o1)&parseInt(o2)))
-				//Ambos os códigos de saída são 0. Isso significa que ambos os pontos finais estão dentro da janela de visualização
-				if(o1 == '0000' && o2 == '0000'){
-					console.log('accept');
-                    pol.pontos.push(start_)
-                    pol.pontos.push(end_)
+        for(let i = 0; i<pontos.length; i++){
+            matriz1[0][0] = pontos[i].x;
+            matriz1[0][1] = pontos[i].y;
+         
+            for (let l=0; l < 1; l++){
+                for (let c=0; c < 3; c++){
+                M_auxiliar[l][c] = 0;
+                    for (let w=0; w < 3; w++){
+                        M_auxiliar[l][c] = M_auxiliar[l][c] + matriz1[l][w]
+                                           * matriz2[w][c];
+                    }
                 }
-				//ambos os códigos de saída têm o mesmo conjunto de bits quando ambos os pontos finais estão fora da janela de visualização
-                // Um ​​ponto final dentro da janela de visualização e uma janela externa
-                  else if( (parseInt(o1) & parseInt(o2)) == 0)
-                {
-                    pol.pontos = this.find_intersection(o1, this.pontos[i], this.pontos[i+1], areaCliping);
-                }
-     
-
-			
+            }
+            pontos[i].x = M_auxiliar[0][0];
+            pontos[i].y = M_auxiliar[0][1];
         }
-        return pol;
+        return pontos;
+    }
+    centro(pontos: Ponto[]){
+        let somax=0;
+        let somay=0;
+    
+        for(let i = 0; i<pontos.length; i++){
+            somax += pontos[i].x;
+            somay += pontos[i].y;
+        }
+    
+        somax = somax / pontos.length;
+        somay = somay / pontos.length;
+    
+        return new Ponto(somax,somay);
     }
 
-    xWvp(mundo: Janela, viewPort: Janela, x: number){
-        return ((x - mundo.xMin) / (mundo.xMax - mundo.xMin)   ) 
+
+
+find_intersection(outcode: string, p1: Ponto, p2: Ponto, janela: Janela)
+{
+
+    let x1 = p1.x;
+    let x2 = p2.x;
+    let y1 = p1.y;
+    let y2 = p2.y;
+
+    let intersections_list = []
+
+    let m = (y2 - y1) / (x2 - x1);
+    let pEsquerda = new Ponto(janela.xMin, m * (janela.xMin - x1) + y1);
+    let pDireita = new Ponto(janela.xMax, m * (janela.xMax - x1) + y1);
+    let pTopo = new Ponto(x1 + (1 / m) * (janela.yMax - y1), janela.yMax);
+    let pFundo = new Ponto(x1 + (1 / m) * (janela.yMin - y1), janela.yMin);
+
+    if (pEsquerda.y >= janela.yMin && pEsquerda.y <= janela.yMax)
+        intersections_list.push(pEsquerda);
+    if (pDireita.y >= janela.yMin && pDireita.y <= janela.yMax)
+        intersections_list.push(pDireita)
+    if (pTopo.x > janela.xMin && pTopo.x <= janela.xMax)
+        intersections_list.push(pTopo);
+    if (pFundo.x > janela.xMin && pFundo.x <= janela.xMax)
+        intersections_list.push(pFundo);
+    return intersections_list
+}
+cliping(areaCliping: Janela): Poligono{
+    let pol = new Poligono()
+    pol.tipo = 'cliping';
+    for (let i = 0; i < this.pontos.length - 1; i++) {
+        //New variables to hold end points. No relation 
+        //to global 'start' and 'end'
+        let start_ = this.pontos[i];
+        let end_ = this.pontos[i + 1];
+
+        let o1 = start_.cohen(areaCliping);
+        let o2 = end_.cohen(areaCliping);
+        console.log('o1 o2 and', o1, o2, (parseInt(o1) & parseInt(o2)))
+        //Ambos os códigos de saída são 0. Isso significa que ambos os pontos finais estão dentro da janela de visualização
+        if (o1 == '0000' && o2 == '0000') {
+            console.log('accept');
+            pol.pontos.push(start_)
+            pol.pontos.push(end_)
+        }
+        //ambos os códigos de saída têm o mesmo conjunto de bits quando ambos os pontos finais estão fora da janela de visualização
+        // Um ​​ponto final dentro da janela de visualização e uma janela externa
+        else if ((parseInt(o1) & parseInt(o2)) == 0) {
+            pol.pontos = this.find_intersection(o1, this.pontos[i], this.pontos[i + 1], areaCliping);
+        }
+
+
+
+    }
+    return pol;
+}
+
+xWvp(mundo: Janela, viewPort: Janela, x: number){
+    return ((x - mundo.xMin) / (mundo.xMax - mundo.xMin))
         * (viewPort.xMax - viewPort.xMin);
-      }
-    
-      yWvp(mundo: Janela, viewPort: Janela, y:number){
-        return (1- (  (y-mundo.yMin)/(mundo.yMax - mundo.yMin) )) *(viewPort.yMax - viewPort.yMin);
-      }
-}   
+}
+
+yWvp(mundo: Janela, viewPort: Janela, y: number){
+    return (1 - ((y - mundo.yMin) / (mundo.yMax - mundo.yMin))) * (viewPort.yMax - viewPort.yMin);
+}
+}

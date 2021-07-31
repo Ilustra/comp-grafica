@@ -41,6 +41,7 @@ export class CCanvaComponent implements OnInit {
   poligonoId: Guid
   transladY: number
   angulo: number
+  typeRotation: string = 'padrao'
   async ngOnInit() {
     this.displayService.onMundo(-250, -250, 250, 250);
     this.displayService.onViewPort(0, 0, 500, 500);
@@ -142,8 +143,14 @@ export class CCanvaComponent implements OnInit {
     this.displayService.onDesenha();
   }
 
-  onRotation(id: Guid, angulo: number) {
+  onRotation(id: Guid, angulo: number, type: string) {
+
+    if(type == 'homogenea')
+    this.displayService.onRotationHomogenea(id, angulo);
+    else if(type == "padrao")
     this.displayService.onRatationPoligono(id, angulo);
+
+
     this.displayService.onDesenha();
   }
 

@@ -44,4 +44,12 @@ export class DisplayFile{
                 element.onVisiblePoligono();
         })
     }
+    onRotateHomogenea(id:Guid, grau:number){
+        this.poligonos.forEach(element=>{
+            if(element.id == id){
+                let newPOL = element.onRotateHomogenea(grau);
+                console.log(newPOL)
+            }
+        })
+    }
 }

@@ -1,6 +1,5 @@
-<div
-  style="justify-content: center; align-items: center;  justify-content: center; align-items: center; background-color: #c7c7c7;">
-  <div style="display: flex; flex-direction: row; background-color: #c7c7c7;  justify-content: space-between;">
+
+  <div style="display: flex;  background-color: #c7c7c7;  justify-content: space-between;">
     <mat-card (mousemove)="onMouseMove($event)" style="width: 501px; height: 501px;margin: 0px; padding: 0px;">
       <canvas (click)="onClick($event)" #canvas id='canvas' width="500" height="500"
         style="border:1px solid #000000;"></canvas>
@@ -69,8 +68,7 @@
       <div style="width: 320px; background-color: #fafafa; overflow:scroll; max-height: 100vh; padding: 10px;">
         <p>Poligonos</p>
 
-        <div style="flex-direction: row; display: flex; align-items: center;">
-
+        <div style="">
           <mat-form-field appearance="legacy" style="width: 40px; margin: 0px; ">
             <input matInput placeholder="X" type="number" matInput [(ngModel)]="transladX"
               [ngModelOptions]="{standalone: true}">
@@ -84,37 +82,38 @@
           <button style="height: 50px;" mat-button color="primary"
             (click)='onTransLad(poligonoId, transladX, transladY)'> Transladar</button>
         </div>
-        
-        <div style="display: flex; align-items: center;">
+
+        <div style="">
+          <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+            [(ngModel)]="typeRotation" style="margin: 5px;">
+            <mat-radio-button class="example-radio-button" value='padrao' style="font-size: 10px;">
+              Padrão
+            </mat-radio-button>           
+             <mat-radio-button class="example-radio-button" value='homogenea' style="font-size: 10px;">
+              Homogenea
+            </mat-radio-button>
+          </mat-radio-group>
           <mat-form-field appearance="legacy" style="width: 50px;">
-            <input type="number" matInput placeholder="0º" [(ngModel)]="angulo"
-              [ngModelOptions]="{standalone: true}">
+            <input type="number" matInput placeholder="0º" [(ngModel)]="angulo" [ngModelOptions]="{standalone: true}">
           </mat-form-field>
-          <button mat-button color="primary" (click)='onRotation(poligonoId, angulo)' style="height: 10px;">
+          <button mat-button color="primary" (click)='onRotation(poligonoId, angulo, typeRotation)'
+            style="height: 10px;">
             rotacionar</button>
         </div>
         <mat-card>
           <div *ngFor='let index of displayService.display.poligonos'>
-            <span style="color:#c7c7c7; font-size: 10px;">     {{index.tipo}}</span>
-         
+            <span style="color:#c7c7c7; font-size: 10px;"> {{index.tipo}}</span>
             <mat-card style="padding: 5px; margin-bottom: 5px;">
-   
-              <mat-radio-group
-            aria-labelledby="example-radio-group-label"
-            class="example-radio-group"
-            [(ngModel)]="poligonoId">
-            <mat-radio-button class="example-radio-button" [value]=index.id>
-              {{index.selected ? 'selecionado' : null}}
-            </mat-radio-button>
-          </mat-radio-group>
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                [(ngModel)]="poligonoId">
+                <mat-radio-button class="example-radio-button" [value]=index.id>
+                  {{index.selected ? 'selecionado' : null}}
+                </mat-radio-button>
+              </mat-radio-group>
               <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
                 aria-label="Example icon button with a heart icon">
-   
-                  <mat-icon color="primary" *ngIf='index.visible'>visibility</mat-icon>
-                
-                  <mat-icon style="color:#c7c7c7" *ngIf='!index.visible'>visibility_off</mat-icon>
-                
-          
+                <mat-icon color="primary" *ngIf='index.visible'>visibility</mat-icon>
+                <mat-icon style="color:#c7c7c7" *ngIf='!index.visible'>visibility_off</mat-icon>
               </button>
               <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
                 aria-label="Example icon button with a heart icon">
@@ -123,8 +122,6 @@
             </mat-card>
           </div>
         </mat-card>
-
       </div>
     </div>
   </div>
-</div>                  

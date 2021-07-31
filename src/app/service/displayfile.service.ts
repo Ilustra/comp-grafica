@@ -121,6 +121,10 @@ export class DisplayfileService {
         value.onRotation(angulo);
     })
   }
+  onRotationHomogenea(id: Guid, grau: number){
+    
+    this.display.onRotateHomogenea(id, grau);
+  }
   reloadEixo(){
     this.display.poligonos.forEach(value=>{
       if(value.tipo =='eixoX'){

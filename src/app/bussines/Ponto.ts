@@ -31,12 +31,18 @@ export class Ponto{
         this.x +=  deslocamentoX
         this.y +=  deslocamentoY;
     }
-
+    onReflet(newX:number, newY:number){
+        this.x *= newX;
+        this.y *=newY;
+    }
     onRotation(angulo:number){
         let teta = angulo *(Math.PI/180)
-        this.x = this.x * Math.cos(teta)-this.y *Math.sin(teta);
-        this.y = this.x * Math.sin(teta)+this.y *Math.cos(teta);
+        let xold = this.x;
+
+        this.x = (this.x * Math.cos(teta))-(this.y *Math.sin(teta));
+        this.y = (xold*Math.sin(teta))+(this.y*Math.cos(teta));
     }
+
     cohen(janela: Janela){
  
       let code = '';
@@ -65,7 +71,6 @@ export class Ponto{
       code = code + '0';
 
       return code
-
     }
 
     xM(mundo: Janela, viewPort: Janela){
