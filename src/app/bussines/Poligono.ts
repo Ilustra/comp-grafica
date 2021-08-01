@@ -1,5 +1,6 @@
 import { ElementRef } from "@angular/core";
 import { Guid } from "guid-typescript";
+import { TIPO_POLIGONO } from "./enum";
 import { Janela } from "./Janela";
 import { onGuid } from "./onGuid";
 import { Ponto } from "./Ponto";
@@ -8,7 +9,7 @@ export class Poligono {
 
 
     public id: Guid;
-    public tipo: string = '';
+    public tipo: TIPO_POLIGONO = TIPO_POLIGONO.vector;
     public pontos: Ponto[];
     public visible: boolean;
     public selected: boolean;
@@ -22,9 +23,7 @@ export class Poligono {
         this.visible = !this.visible
     }
     desenha(ctx: any, mundo: Janela, viewPort: Janela): any {
-
         if (this.visible) {
-
             for (let i = 0; i < this.pontos.length; i++) {
 
                 if (i == 0) {
@@ -36,7 +35,49 @@ export class Poligono {
             return ctx;
         }
     }
-
+    desenhaDDA(ctx: any, mundo: Janela, viewPort: Janela){
+        let pontos: Ponto[]=[]
+        for (let i = 1; i < this.pontos.length; i++) {
+            let x1,x2,y1,y2;
+            let length;
+            let deltax,deltay,deltaDivx,deltaDivy;
+            let x,y;
+    
+            x1 = this.pontos[i-1].Vpx(mundo,viewPort);
+            y1 = this.pontos[i-1].Vpy(mundo,viewPort);
+            x2 = this.pontos[i].Vpx(mundo,viewPort);
+            y2 = this.pontos[i].Vpy(mundo,viewPort);
+    
+            deltax = x2-x1;
+            deltay = y2-y1;
+    
+            if(Math.abs(deltax) >= Math.abs(deltay))
+                length = Math.abs(deltax);
+            else
+                length = Math.abs(deltay);
+    
+            deltaDivx =  deltax / length;
+            deltaDivy =  deltay / length;
+            x = x1 + 0.5 * Math.sign(deltaDivx);
+            y = y1 + 0.5 * Math.sign(deltaDivy);
+    
+            for (let i = 0; i < length; i++) {
+                pontos.push(new Ponto(Math.floor(x), Math.floor(y)))
+                x += deltaDivx;
+                y += deltaDivy;
+            }
+        }
+        if (this.visible) {
+            for (let i = 0; i < pontos.length; i++) {
+                if (i == 0) {
+                    ctx.moveTo(pontos[i].x, pontos[i].y);
+                } else {
+                    ctx.lineTo(pontos[i].x, pontos[i].y);
+                }
+            }
+            return ctx;
+        }
+    }
     onTranslado(descolamentoX: number, descolamentoY: number) {
         this.pontos.forEach(value => {
             value.onTranslad(descolamentoX, descolamentoY);
@@ -89,6 +130,12 @@ export class Poligono {
         }
         return pontos;
     }
+    onReflete(x: number, y: number){
+        this.pontos.forEach(value=>{
+            value.onReflete(x, y);
+        })
+    }
+
     centro(pontos: Ponto[]){
         let somax=0;
         let somay=0;
@@ -134,7 +181,7 @@ find_intersection(outcode: string, p1: Ponto, p2: Ponto, janela: Janela)
 }
 cliping(areaCliping: Janela): Poligono{
     let pol = new Poligono()
-    pol.tipo = 'cliping';
+    pol.tipo = TIPO_POLIGONO.cliping;
     for (let i = 0; i < this.pontos.length - 1; i++) {
         //New variables to hold end points. No relation 
         //to global 'start' and 'end'

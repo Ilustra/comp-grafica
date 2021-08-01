@@ -42,7 +42,10 @@ export class Ponto{
         this.x = (this.x * Math.cos(teta))-(this.y *Math.sin(teta));
         this.y = (xold*Math.sin(teta))+(this.y*Math.cos(teta));
     }
-
+    onReflete(x: number, y: number){
+        this.x *=x;
+        this.y *=y;
+    }
     cohen(janela: Janela){
  
       let code = '';
@@ -72,12 +75,16 @@ export class Ponto{
 
       return code
     }
-
+    Vpx(mundo: Janela, vp: Janela){
+        return  (1+((this.x - mundo.xMax)/(mundo.xMax - mundo.xMin))) * (vp.xMax - vp.xMin);
+    }
+    Vpy(mundo: Janela, vp: Janela){
+        return  (-((this.y - mundo.yMax)/(mundo.yMax - mundo.yMin))) * (vp.yMax - vp.yMin);
+    }
+    /*
     xM(mundo: Janela, viewPort: Janela){
        return ((this.x - viewPort.xMin) / (viewPort.xMax - viewPort.xMin)) * (mundo.xMax - mundo.xMin)+mundo.xMin;
     }
     yM(mundo: Janela, viewPort: Janela){
-    return (1-((this.y-viewPort.yMin)/(viewPort.yMax - viewPort.yMin)))*(mundo.yMax - mundo.yMin)+mundo.yMin
-
-      }
+    return (1-((this.y-viewPort.yMin)/(viewPort.yMax - viewPort.yMin)))*(mundo.yMax - mundo.yMin)+mundo.yMin}*/
 }

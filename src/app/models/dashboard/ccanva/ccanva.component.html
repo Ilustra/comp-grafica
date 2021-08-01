@@ -37,11 +37,17 @@
     <div style="display: flex;">
       <mat-card style="margin-left: 10px; height: 250px;">
         <ul>
-          <li> <button (click)='onInsertPoligono()' mat-mini-fab color="accent"
+          <li> <button (click)='onInsertPoligono("vector")' mat-mini-fab color="accent"
               aria-label="Example icon button with a plus one icon">
               <mat-icon>edit</mat-icon>
             </button>
-          </li>
+          </li>       
+          <li> <button (click)='onInsertPoligono("dda")' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>edit</mat-icon>
+              <span>DDa</span>
+            </button>
+          </li>    
           <li> <button (click)='clearPainel()' mat-mini-fab color="accent"
               aria-label="Example icon button with a plus one icon">
               <mat-icon>delete_sweep</mat-icon>
@@ -88,6 +94,20 @@
         </mat-card>
 
         <mat-card style="display: flex; background-color: #fafafa; margin: 5px;">
+          <mat-form-field appearance="legacy" style="width: 40px; margin: 0px; ">
+            <input matInput placeholder="X" type="number" matInput [(ngModel)]="transladX"
+              [ngModelOptions]="{standalone: true}">
+          </mat-form-field>
+
+          <mat-form-field appearance="legacy" style="width: 40px; margin: 0px">
+            <input matInput placeholder="Y" type="number" matInput [(ngModel)]="transladY"
+              [ngModelOptions]="{standalone: true}">
+          </mat-form-field>
+
+          <button style="height: 50px;" mat-button color="primary"
+            (click)='onReflete(poligonoId, transladX, transladY)'> Refletir</button>
+        </mat-card>
+        <mat-card style="display: flex; background-color: #fafafa; margin: 5px;">
           <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
             [(ngModel)]="typeRotation" style="margin: 10px; display: flex; flex-direction: column;">
             <mat-radio-button class="example-radio-button" value='padrao' style="font-size: 12px;">
@@ -104,10 +124,11 @@
             style="height: 10px;">
             rotacionar</button>
         </mat-card>
-        <mat-card>
+        <mat-card  style=" background-color: #fafafa; margin: 5px;">
           <div *ngFor='let index of displayService.display.poligonos'>
-            <span style="color:#c7c7c7; font-size: 10px;"> {{index.tipo}}</span>
-            <mat-card style="padding: 5px; margin-bottom: 5px;">
+   
+            <div style="padding: 5px; margin-bottom: 5px; border: solid; border-color: #fafafa;">
+              <span style=" font-size: 14px; margin-right: 15px;"> {{index.tipo}}</span>
               <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
                 [(ngModel)]="poligonoId">
                 <mat-radio-button class="example-radio-button" [value]=index.id>
@@ -123,7 +144,7 @@
                 aria-label="Example icon button with a heart icon">
                 <mat-icon>delete</mat-icon>
               </button>
-            </mat-card>
+            </div>
           </div>
         </mat-card>
       </div>
