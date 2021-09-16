@@ -1,0 +1,16 @@
+
+<div
+class="app-splash-screen"
+[ngStyle]="{ 
+  left: windowWidth, 
+  opacity: opacityChange,
+  transition: splashTransition
+}"
+*ngIf="showSplash"
+>
+<div class="app-splash-inner">
+  <object type="image/svg+xml" data="../../../assets/swa-splash.svg"></object>
+  {{menssagem}}
+
+</div>
+</div>

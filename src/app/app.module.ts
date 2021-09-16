@@ -18,12 +18,14 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatRadioModule} from '@angular/material/radio';
+import { SplashScreenComponent } from './models/splash-screen/splash-screen.component';
 @NgModule({
   declarations: [
     AppComponent,
     PainelComponent,
     CCanvaComponent,
     ListPolComponent,
+    SplashScreenComponent,
 
   ],
   imports: [
