@@ -1,9 +1,11 @@
 import { ElementRef, Injectable, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { DisplayFile } from '../bussines/displayFile';
+import { TIPO_POLIGONO } from '../bussines/enum';
 import { Janela } from '../bussines/Janela';
 import { Poligono } from '../bussines/Poligono';
 import { Ponto } from '../bussines/Ponto';
+
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +41,8 @@ export class DisplayfileService {
   onEixoCartesiano(){
     let xPol = new Poligono()
     let yPol = new Poligono();
-    xPol.tipo ='eixoX'
-    yPol.tipo ='eixoY' 
+    xPol.tipo = TIPO_POLIGONO.eixoX
+    yPol.tipo = TIPO_POLIGONO.eixoY
     //eixo y 1 250 - 0 -250
     xPol.pontos.push(new Ponto(-250, 0))
     xPol.pontos.push(new Ponto(250, 0))
@@ -51,6 +53,26 @@ export class DisplayfileService {
     this.display.poligonos.push(xPol)
     this.display.poligonos.push(yPol)
   }
+  onNewPol(type: TIPO_POLIGONO){
+    this.poligono = new Poligono();
+    this.poligono.tipo = type
+    this.display.poligonos.push(this.poligono);
+  }
+  onPushPontos(id: Guid, x: number, y:number){
+    this.display.poligonos.forEach(value=>{
+      if(value.id == id){     
+          value.pontos.push(new Ponto(x, y))
+      }
+    })
+  }
+
+  onReflete(id: Guid, x: number, y: number){
+    this.display.poligonos.forEach(value=>{
+      if(value.id == id)
+        value.onReflete(x, y);
+    })
+  }
+
   onCreatePontCircun(pol: Poligono, xc: number, yc: number, x: number, y: number): Poligono{
     pol.pontos.push(new Ponto(xc + x, yc + y));
     pol.pontos.push(new Ponto(xc - x, yc + y));
@@ -77,6 +99,7 @@ export class DisplayfileService {
     let x = 0;
     let y = r;
     let poli: Poligono = new Poligono();
+    poli.tipo = TIPO_POLIGONO.elipse
     poli = this.onCreatePontCircun(poli, xc, yc, x, y);
       let p = r-1;
     while(x < y){
@@ -121,13 +144,17 @@ export class DisplayfileService {
         value.onRotation(angulo);
     })
   }
+  onRotationHomogenea(id: Guid, grau: number){
+
+    this.display.onRotateHomogenea(id, grau);
+  }
   reloadEixo(){
     this.display.poligonos.forEach(value=>{
-      if(value.tipo =='eixoX'){
+      if(value.tipo ==TIPO_POLIGONO.eixoX){
         value.pontos[0].x = this.mundo.xMax
         value.pontos[1].x = this.mundo.xMin
       }
-      if(value.tipo=='eixoY'){
+      if(value.tipo==TIPO_POLIGONO.eixoY){
         value.pontos[0].y = this.mundo.yMax
         value.pontos[1].y = this.mundo.yMin
       }
@@ -142,19 +169,25 @@ export class DisplayfileService {
     this.onDesenha()
   }                                                                                           
   onMoviment(top: number, bottom: number, left: number, rigth: number){
-    console.log(this.mundo)
 
-    this.mundo.yMax +=top
-    this.mundo.xMax += rigth;
+    if(top > 0){
+      this.mundo.yMin += top;
+      this.mundo.yMax += top;
+    }
+    else if(left > 0){
+      this.mundo.xMin += left;
+      this.mundo.xMax += left;
+    }   
+     else if(bottom > 0){
+      this.mundo.yMax -= bottom;
+      this.mundo.yMin -= bottom;
+    }else if(rigth >0){
+      this.mundo.xMin -= rigth;
+      this.mundo.xMax -= rigth;
+    }
 
-    this.mundo.yMin +=bottom
-    this.mundo.xMin += left;
-
-
-
-    console.log(this.mundo)
     this.reloadEixo()
-    this.onDesenha()
+
 
   }
 
@@ -166,17 +199,7 @@ export class DisplayfileService {
   yWvp(mundo: Janela, viewPort: Janela, y:number){
     return (1- (  (y-mundo.yMin)/(mundo.yMax - mundo.yMin) )) *(viewPort.yMax - viewPort.yMin);
   }
-  onNewPol(){
-    this.poligono = new Poligono();
-    this.display.poligonos.push(this.poligono);
-  }
-  onPushPontos(id: Guid, x: number, y:number){
-    this.display.poligonos.forEach(value=>{
-      if(value.id == id){
-        value.pontos.push(new Ponto(x, y))
-      }
-    })
-  }
+
   desenhaPonto(x: number, y: number){
     this.context.moveTo(x, y);
     this.context.lineTo(x, y);

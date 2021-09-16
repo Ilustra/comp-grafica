@@ -1,6 +1,5 @@
-<div
-  style="justify-content: center; align-items: center;  justify-content: center; align-items: center; background-color: #c7c7c7;">
-  <div style="display: flex; flex-direction: row; background-color: #c7c7c7;  justify-content: space-between;">
+
+  <div style="display: flex;  background-color: #c7c7c7;  justify-content: space-between; height: 100vh;">
     <mat-card (mousemove)="onMouseMove($event)" style="width: 501px; height: 501px;margin: 0px; padding: 0px;">
       <canvas (click)="onClick($event)" #canvas id='canvas' width="500" height="500"
         style="border:1px solid #000000;"></canvas>
@@ -9,36 +8,46 @@
         <span>x: {{displayService.positionViewport.x}}, y: {{displayService.positionViewport.y}}</span>
         <span>x: {{displayService.positionViewport.newX}}, y: {{displayService.positionViewport.newY}}</span>
       </div>
-      <div style="justify-content: center; display: block; align-items: center; ">
-        <button (click)='onMoviment(50,50,50,-50)' mat-mini-fab color="accent"
+      <mat-card style="justify-content: center; display: flex; align-items: center; width: 100px; ">
+        <div>
+  
+        </div>
+        <button (click)='onMoviment(0,0,10,0)' mat-mini-fab color="accent"
+        aria-label="Example icon button with a plus one icon">
+        <mat-icon>arrow_left</mat-icon>
+      </button>
+        <div style="">
+          <button (click)='onMoviment(10,0,0,0)' mat-mini-fab color="accent"
           aria-label="Example icon button with a plus one icon">
           <mat-icon>arrow_drop_up</mat-icon>
         </button>
-        <div style="display: flex;">
-          <button (click)='onMoviment(-50,-50,50,50)' mat-mini-fab color="accent"
-            aria-label="Example icon button with a plus one icon">
-            <mat-icon>arrow_left</mat-icon>
-          </button>
-          <button (click)='onMoviment(50,50,50,50)' mat-mini-fab color="accent"
-            aria-label="Example icon button with a plus one icon">
-            <mat-icon>arrow_right</mat-icon>
-          </button>
-        </div>
-        <button (click)='onMoviment(-50,-50,50,50)' mat-mini-fab color="accent"
+          <button (click)='onMoviment(0,10,0,0)' mat-mini-fab color="accent"
           aria-label="Example icon button with a plus one icon">
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
-      </div>
+        </div>
+        <button (click)='onMoviment(0,0,0,10)' mat-mini-fab color="accent"
+        aria-label="Example icon button with a plus one icon">
+        <mat-icon>arrow_right</mat-icon>
+      </button>
+
+      </mat-card>
     </mat-card>
 
     <div style="display: flex;">
       <mat-card style="margin-left: 10px; height: 250px;">
         <ul>
-          <li> <button (click)='onInsertPoligono()' mat-mini-fab color="accent"
+          <li> <button (click)='onInsertPoligono("vector")' mat-mini-fab color="accent"
               aria-label="Example icon button with a plus one icon">
               <mat-icon>edit</mat-icon>
             </button>
-          </li>
+          </li>       
+          <li> <button (click)='onInsertPoligono("dda")' mat-mini-fab color="accent"
+              aria-label="Example icon button with a plus one icon">
+              <mat-icon>edit</mat-icon>
+              <span>DDa</span>
+            </button>
+          </li>    
           <li> <button (click)='clearPainel()' mat-mini-fab color="accent"
               aria-label="Example icon button with a plus one icon">
               <mat-icon>delete_sweep</mat-icon>
@@ -66,11 +75,10 @@
           </li>
         </ul>
       </mat-card>
-      <div style="width: 320px; background-color: #fafafa; overflow:scroll; max-height: 100vh; padding: 10px;">
+      <div style="width: 320px; background-color: #fafafa; overflow:scroll; max-height: 100vh;">
         <p>Poligonos</p>
 
-        <div style="flex-direction: row; display: flex; align-items: center;">
-
+        <mat-card style="display: flex; background-color: #fafafa; margin: 5px;">
           <mat-form-field appearance="legacy" style="width: 40px; margin: 0px; ">
             <input matInput placeholder="X" type="number" matInput [(ngModel)]="transladX"
               [ngModelOptions]="{standalone: true}">
@@ -83,48 +91,62 @@
 
           <button style="height: 50px;" mat-button color="primary"
             (click)='onTransLad(poligonoId, transladX, transladY)'> Transladar</button>
-        </div>
-        
-        <div style="display: flex; align-items: center;">
-          <mat-form-field appearance="legacy" style="width: 50px;">
-            <input type="number" matInput placeholder="0º" [(ngModel)]="angulo"
+        </mat-card>
+
+        <mat-card style="display: flex; background-color: #fafafa; margin: 5px;">
+          <mat-form-field appearance="legacy" style="width: 40px; margin: 0px; ">
+            <input matInput placeholder="X" type="number" matInput [(ngModel)]="transladX"
               [ngModelOptions]="{standalone: true}">
           </mat-form-field>
-          <button mat-button color="primary" (click)='onRotation(poligonoId, angulo)' style="height: 10px;">
-            rotacionar</button>
-        </div>
-        <mat-card>
-          <div *ngFor='let index of displayService.display.poligonos'>
-            <span style="color:#c7c7c7; font-size: 10px;">     {{index.tipo}}</span>
-         
-            <mat-card style="padding: 5px; margin-bottom: 5px;">
-   
-              <mat-radio-group
-            aria-labelledby="example-radio-group-label"
-            class="example-radio-group"
-            [(ngModel)]="poligonoId">
-            <mat-radio-button class="example-radio-button" [value]=index.id>
-              {{index.selected ? 'selecionado' : null}}
+
+          <mat-form-field appearance="legacy" style="width: 40px; margin: 0px">
+            <input matInput placeholder="Y" type="number" matInput [(ngModel)]="transladY"
+              [ngModelOptions]="{standalone: true}">
+          </mat-form-field>
+
+          <button style="height: 50px;" mat-button color="primary"
+            (click)='onReflete(poligonoId, transladX, transladY)'> Refletir</button>
+        </mat-card>
+        <mat-card style="display: flex; background-color: #fafafa; margin: 5px;">
+          <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+            [(ngModel)]="typeRotation" style="margin: 10px; display: flex; flex-direction: column;">
+            <mat-radio-button class="example-radio-button" value='padrao' style="font-size: 12px;">
+              Padrão
+            </mat-radio-button>           
+             <mat-radio-button class="example-radio-button" value='homogenea' style="font-size: 10px;">
+              Homogenea
             </mat-radio-button>
           </mat-radio-group>
+          <mat-form-field appearance="legacy" style="width: 50px;">
+            <input type="number" matInput placeholder="0º" [(ngModel)]="angulo" [ngModelOptions]="{standalone: true}">
+          </mat-form-field>
+          <button mat-button color="primary" (click)='onRotation(poligonoId, angulo, typeRotation)'
+            style="height: 10px;">
+            rotacionar</button>
+        </mat-card>
+        <mat-card  style=" background-color: #fafafa; margin: 5px;">
+          <div *ngFor='let index of displayService.display.poligonos'>
+   
+            <div style="padding: 5px; margin-bottom: 5px; border: solid; border-color: #fafafa;">
+              <span style=" font-size: 14px; margin-right: 15px;"> {{index.tipo}}</span>
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                [(ngModel)]="poligonoId">
+                <mat-radio-button class="example-radio-button" [value]=index.id>
+                  {{index.selected ? 'selecionado' : null}}
+                </mat-radio-button>
+              </mat-radio-group>
               <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
                 aria-label="Example icon button with a heart icon">
-   
-                  <mat-icon color="primary" *ngIf='index.visible'>visibility</mat-icon>
-                
-                  <mat-icon style="color:#c7c7c7" *ngIf='!index.visible'>visibility_off</mat-icon>
-                
-          
+                <mat-icon color="primary" *ngIf='index.visible'>visibility</mat-icon>
+                <mat-icon style="color:#c7c7c7" *ngIf='!index.visible'>visibility_off</mat-icon>
               </button>
               <button (click)='onVisiblePoligono(index.id)' mat-icon-button color="warn"
                 aria-label="Example icon button with a heart icon">
                 <mat-icon>delete</mat-icon>
               </button>
-            </mat-card>
+            </div>
           </div>
         </mat-card>
-
       </div>
     </div>
   </div>
-</div>                  

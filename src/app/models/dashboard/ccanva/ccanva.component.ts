@@ -4,6 +4,8 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { DisplayFile } from 'src/app/bussines/displayFile';
+import { TIPO_POLIGONO } from 'src/app/bussines/enum';
+
 import { Janela } from 'src/app/bussines/Janela';
 import { Poligono } from 'src/app/bussines/Poligono';
 import { Ponto } from 'src/app/bussines/Ponto';
@@ -35,12 +37,13 @@ export class CCanvaComponent implements OnInit {
   constructor(public displayService: DisplayfileService, private formBuilder: FormBuilder) {
 
   }
-
+  tipoPoligono: TIPO_POLIGONO;
   loginForm: FormGroup
   transladX: number
   poligonoId: Guid
   transladY: number
   angulo: number
+  typeRotation: string = 'padrao'
   async ngOnInit() {
     this.displayService.onMundo(-250, -250, 250, 250);
     this.displayService.onViewPort(0, 0, 500, 500);
@@ -59,14 +62,26 @@ export class CCanvaComponent implements OnInit {
   }
 
   private insertPoligono: boolean = false;
-
-  onInsertPoligono() {
+  onInsertDDA(){
+    if(this.insertPoligono){
+      this.insertPoligono =!this.insertPoligono
+      this.displayService.onNewPol(TIPO_POLIGONO.dda);
+    }else{
+      this.displayService.onNewPol(TIPO_POLIGONO.dda);
+    }
+  }
+  onInsertPoligono(tipo: string) {
     if (!this.insertPoligono) {
       this.insertPoligono = !this.insertPoligono;
-      this.displayService.onNewPol();
+      if(tipo=='vector')
+      this.displayService.onNewPol(TIPO_POLIGONO.vector);
+      if(tipo=='dda')
+      this.displayService.onNewPol(TIPO_POLIGONO.dda);
     } else {
-      this.displayService.onNewPol();
-      // this.displayService.display.poligonos.unshift(new Poligono());
+      if(tipo=='vector')
+      this.displayService.onNewPol(TIPO_POLIGONO.vector);
+      if(tipo=='dda')
+      this.displayService.onNewPol(TIPO_POLIGONO.dda);
     }
   }
 
@@ -141,9 +156,18 @@ export class CCanvaComponent implements OnInit {
     })
     this.displayService.onDesenha();
   }
+  onReflete(id: Guid, x: number, y: number){
+    this.displayService.onReflete(id, x, y);
+    this.displayService.onDesenha()
+  }
+  onRotation(id: Guid, angulo: number, type: string) {
 
-  onRotation(id: Guid, angulo: number) {
+    if(type == 'homogenea')
+    this.displayService.onRotationHomogenea(id, angulo);
+    else if(type == "padrao")
     this.displayService.onRatationPoligono(id, angulo);
+
+
     this.displayService.onDesenha();
   }
 
@@ -155,7 +179,6 @@ export class CCanvaComponent implements OnInit {
     this.displayService.onZoomPlus(xmin, xmax, ymin, ymax);
   }
   onMoviment(top: number, bottom: number, left: number, rigth: number) {
-    console.log(top, bottom, left, rigth)
     this.displayService.onMoviment(top, bottom, left, rigth)
     this.displayService.onDesenha();
   }
